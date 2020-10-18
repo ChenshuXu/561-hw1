@@ -6,21 +6,22 @@ from collections import deque
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 def main():
     """ Main program """
     arguments = len(sys.argv) - 1
     position = 1
-    while (arguments >= position):
+    while arguments >= position:
         logging.debug("Parameter %i: %s" % (position, sys.argv[position]))
         position = position + 1
-    
+
     # get file name from argv
     file_name = "input25.txt"
     # read file and get params
     algorithm_name, dimensions, entrance_loc, exit_loc, N, grid_locations = read_params(file_name)
     # build graph
     graph = build_graph(grid_locations)
-    
+
     path = []
     if algorithm_name == "BFS":
         path = bfs(graph, entrance_loc, exit_loc)
@@ -29,10 +30,11 @@ def main():
     elif algorithm_name == "A*":
         path = a_star(graph, entrance_loc, exit_loc)
     logging.debug(path)
-    #output_file("output.txt", path)
+    # output_file("output.txt", path)
     output_file("out_" + file_name, path)
 
     return 0
+
 
 def read_params(file_name):
     # open file
@@ -86,6 +88,7 @@ def read_params(file_name):
     f.close()
     return algorithm_name, dimensions, entrance_loc, exit_loc, N, grid_locations
 
+
 def build_graph(grid_locations):
     # key = point, value = list of its neighbors
     graph = collections.defaultdict(list)
@@ -97,30 +100,32 @@ def build_graph(grid_locations):
     logging.debug(graph)
     return graph
 
+
 def next_grid(location, direction):
     switcher = {
-        1: (1,0,0),
-        2: (-1,0,0),
-        3: (0,1,0),
-        4: (0,-1,0),
-        5: (0,0,1),
-        6: (0,0,-1),
-        7: (1,1,0),
-        8: (1,-1,0),
-        9: (-1,1,0),
-        10: (-1,-1,0),
-        11: (1,0,1),
-        12: (1,0,-1),
-        13: (-1,0,1),
-        14: (-1,0,-1),
-        15: (0,1,1),
-        16: (0,1,-1),
-        17: (0,-1,1),
-        18: (0,-1,-1)
+        1: (1, 0, 0),
+        2: (-1, 0, 0),
+        3: (0, 1, 0),
+        4: (0, -1, 0),
+        5: (0, 0, 1),
+        6: (0, 0, -1),
+        7: (1, 1, 0),
+        8: (1, -1, 0),
+        9: (-1, 1, 0),
+        10: (-1, -1, 0),
+        11: (1, 0, 1),
+        12: (1, 0, -1),
+        13: (-1, 0, 1),
+        14: (-1, 0, -1),
+        15: (0, 1, 1),
+        16: (0, 1, -1),
+        17: (0, -1, 1),
+        18: (0, -1, -1)
     }
     x, y, z = location
     s = switcher[direction]
-    return (x + s[0], y + s[1], z + s[2])
+    return x + s[0], y + s[1], z + s[2]
+
 
 def output_file(file_name, path):
     f = open(file_name, "w")
@@ -140,6 +145,7 @@ def output_file(file_name, path):
         f.write("FAIL")
     f.close()
 
+
 def bfs(graph, start, end):
     parent = {}
     visited = set()
@@ -148,7 +154,7 @@ def bfs(graph, start, end):
     found = False
     while queue:
         node = queue.popleft()
-        #logging.debug(node)
+        # logging.debug(node)
         if node == end:
             found = True
             break
@@ -167,12 +173,14 @@ def bfs(graph, start, end):
         path[i] = path[i] + (1,)
     return path
 
+
 def backtrace(parent, start, end):
     path = [end]
     while path[-1] != start:
         path.append(parent[path[-1]])
     path.reverse()
     return path
+
 
 def ucs(graph, start, end):
     parent = {}
@@ -187,7 +195,7 @@ def ucs(graph, start, end):
     while queue:
         cost, x, y, z = heapq.heappop(queue)
         node = (x, y, z)
-        #logging.debug(node)
+        # logging.debug(node)
         if node == end:
             found = True
             break
@@ -209,6 +217,7 @@ def ucs(graph, start, end):
         path[i] = path[i] + (cost_dic[path[i]],)
     return path
 
+
 def a_star(graph, start, end):
     parent = {}
     cost_dic = collections.defaultdict(int)
@@ -222,7 +231,7 @@ def a_star(graph, start, end):
     while queue:
         evaluation, cost, x, y, z = heapq.heappop(queue)
         node = (x, y, z)
-        #logging.debug(node)
+        # logging.debug(node)
         if node == end:
             found = True
             break
@@ -245,10 +254,11 @@ def a_star(graph, start, end):
         path[i] = path[i] + (cost_dic[path[i]],)
     return path
 
+
 def calculate_distance(start, end):
     x1, y1, z1 = start
     x2, y2, z2 = end
-    dx, dy, dz = abs(x2-x1), abs(y2-y1), abs(z2-z1)
+    dx, dy, dz = abs(x2 - x1), abs(y2 - y1), abs(z2 - z1)
     cost = 0
     while dx > 0 or dy > 0 or dz > 0:
         if dx > 0 and dy > 0:
@@ -274,6 +284,7 @@ def calculate_distance(start, end):
             dz -= 1
     logging.debug(cost)
     return cost
+
 
 if __name__ == "__main__":
     start = time.time()
